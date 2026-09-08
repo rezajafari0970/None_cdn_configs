@@ -1,0 +1,80 @@
+============================================
+ NONE CDN - SAFE DEPENDENCY INSTALL
+============================================
+Started: 2026-09-08T17:36:37+00:00
+
+PHP:
+PHP 8.5.4 (cli) (built: Jul 16 2026 18:56:38) (NTS)
+Detected PHP: 8.5
+
+Current SQLite modules:
+
+Updating package metadata...
+Hit:1 http://security.ubuntu.com/ubuntu resolute-security InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu resolute InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu resolute-updates InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu resolute-backports InRelease
+Reading package lists...
+Installing exact package: php8.5-sqlite3
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following NEW packages will be installed:
+  php8.5-sqlite3
+0 upgraded, 1 newly installed, 0 to remove and 76 not upgraded.
+Need to get 40.5 kB of archives.
+After this operation, 176 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu resolute-updates/main amd64 php8.5-sqlite3 amd64 8.5.4-0ubuntu1.2 [40.5 kB]
+Fetched 40.5 kB in 0s (291 kB/s)
+Selecting previously unselected package php8.5-sqlite3.
+(Reading database… (Reading database… 5%(Reading database… 10%(Reading database… 15%(Reading database… 20%(Reading database… 25%(Reading database… 30%(Reading database… 35%(Reading database… 40%(Reading database… 45%(Reading database… 50%(Reading database… 55%(Reading database… 60%(Reading database… 65%(Reading database… 70%(Reading database… 75%(Reading database… 80%(Reading database… 85%(Reading database… 90%(Reading database… 95%(Reading database… 100%(Reading database… 141632 files and directories currently installed.)
+Preparing to unpack …/php8.5-sqlite3_8.5.4-0ubuntu1.2_amd64.deb…
+Unpacking php8.5-sqlite3 (8.5.4-0ubuntu1.2)…
+Setting up php8.5-sqlite3 (8.5.4-0ubuntu1.2)…
+Creating config file /etc/php/8.5/mods-available/sqlite3.ini with new version
+Creating config file /etc/php/8.5/mods-available/pdo_sqlite.ini with new version
+Processing triggers for php8.5-fpm (8.5.4-0ubuntu1.2)…
+Processing triggers for php8.5-cli (8.5.4-0ubuntu1.2)…
+
+Pending kernel upgrade!
+Running kernel version:
+  7.0.0-15-generic
+Diagnostics:
+  The currently running kernel version is not the expected kernel version 7.0.0-31-generic.
+
+Restarting the system to load the new kernel will not be handled automatically, so you should consider rebooting.
+
+Restarting services...
+
+Service restarts being deferred:
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart getty@tty1.service
+ systemctl restart networkd-dispatcher.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+Checking CLI...
+pdo_sqlite
+sqlite3
+
+Checking FPM service...
+Reloading only php8.5-fpm.service
+
+Final verification...
+[OK] sqlite3
+[OK] pdo_sqlite
+[OK] SQLite functional test
+
+Nginx configuration validation:
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+Completed: 2026-09-08T17:36:48+00:00
+============================================
