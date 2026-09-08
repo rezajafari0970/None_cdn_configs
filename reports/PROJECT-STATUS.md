@@ -124,3 +124,42 @@ Next:
 
 Adapt Config Store for TTL + Non-CDN classification
 and connect the new Python panel to the NoneCDN runtime.
+
+## Stage 4 - Fetcher + TTL + CDN
+
+Completed: 2026-09-08T18:15:51+00:00
+
+- [x] CDN detector
+- [x] Address extraction
+- [x] Host/SNI inspection
+- [x] A/AAAA resolution
+- [x] CNAME resolution
+- [x] Cloudflare CIDR matching
+- [x] Conservative CDN ASN matching
+- [x] Unknown classification
+- [x] Only NON_CDN configs stored
+- [x] CDN configs rejected
+- [x] Unknown configs rejected
+- [x] Raw configs preserved
+- [x] Per-source TTL
+- [x] last_seen TTL refresh
+- [x] Shared config source expiry
+- [x] Automatic expired cleanup
+- [x] Missing-on-next-fetch does NOT instantly delete config
+- [x] Fetch interval anchored to cycle start
+- [x] Independent source workers preserved
+- [x] systemd automatic restart
+- [x] Unit/integration tests
+- [x] Isolated NoneCDN service
+
+Status:
+
+FETCHER + TTL + CDN ENGINE ACTIVE
+
+Next:
+
+Snapshot Panel Runtime Integration
++
+Output Subscription API
++
+CDN/Direct statistics in UI

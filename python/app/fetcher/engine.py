@@ -25,6 +25,14 @@ from app.core.config_store import (
     upsert_config,
     config_stats,
     sync_source_snapshot,
+    cleanup_expired,
+)
+
+from app.cdn.detector import (
+    classify_config,
+    CDN,
+    NON_CDN,
+    UNKNOWN,
 )
 
 from app.parser.detector import (
@@ -418,6 +426,8 @@ async def run_source_once(
         source["url"]
     )
 
+    cycle_started_epoch = time.time()
+
     started = now_iso()
 
     previous = read_runtime(
@@ -482,6 +492,11 @@ async def run_source_once(
         # Auto will be re-detected from the response.
         inferred_mode = "auto"
 
+    try:
+        cleanup_expired()
+    except Exception:
+        pass
+
     update_runtime(
         source_id,
 
@@ -502,6 +517,10 @@ async def run_source_once(
 
     new_count = 0
     found_count = 0
+
+    direct_count = 0
+    cdn_count = 0
+    unknown_count = 0
 
     duplicate_streak = 0
     empty_streak = 0
@@ -620,13 +639,46 @@ async def run_source_once(
                 empty_streak = 0
                 total_success += 1
 
+                ttl_seconds = max(
+                    60,
+                    int(
+                        source.get(
+                            "config_ttl_seconds",
+                            3600,
+                        )
+                        or 3600
+                    ),
+                )
+
                 for item in items:
 
                     found_count += 1
 
+                    classification = await asyncio.to_thread(
+                        classify_config,
+                        item,
+                    )
+
+                    state = classification.get(
+                        "classification",
+                        UNKNOWN,
+                    )
+
+                    if state == CDN:
+                        cdn_count += 1
+                        continue
+
+                    if state != NON_CDN:
+                        unknown_count += 1
+                        continue
+
+                    direct_count += 1
+
                     _, created = upsert_config(
                         item,
                         source_id,
+                        ttl_seconds=ttl_seconds,
+                        classification=classification,
                     )
 
                     if created:
@@ -827,6 +879,10 @@ async def run_source_once(
 
             new_configs_last_cycle=new_count,
 
+            direct_last_cycle=direct_count,
+            cdn_last_cycle=cdn_count,
+            unknown_last_cycle=unknown_count,
+
             total_fetches=total_fetches,
             total_success=total_success,
             total_errors=total_errors,
@@ -848,7 +904,7 @@ async def run_source_once(
                 ownership_sync
             ),
 
-            last_fetch_epoch=time.time(),
+            last_fetch_epoch=cycle_started_epoch,
 
             consecutive_failures=0,
             current_backoff_seconds=0,
@@ -877,6 +933,15 @@ async def run_source_once(
 
             "new":
                 new_count,
+
+            "direct":
+                direct_count,
+
+            "cdn":
+                cdn_count,
+
+            "unknown":
+                unknown_count,
 
             "stop_reason":
                 stop_reason,
@@ -963,7 +1028,7 @@ async def run_source_once(
             last_http_status=last_status_code,
             last_content_type=last_content_type,
 
-            last_fetch_epoch=time.time(),
+            last_fetch_epoch=cycle_started_epoch,
 
             consecutive_failures=(
                 consecutive_failures

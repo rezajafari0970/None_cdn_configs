@@ -1,0 +1,85 @@
+============================================================
+ NoneCDN Stage 4
+ Fetcher + TTL + CDN Detector
+============================================================
+Started: 2026-09-08T18:15:42+00:00
+
+[OK] Fetcher patched
+
+===== SYNTAX =====
+[OK] Python syntax
+
+===== DEPLOY =====
+[OK] Source deployed
+Requirement already satisfied: aiohttp<4,>=3.10 in /opt/nonecdn/venv/lib/python3.14/site-packages (from -r /opt/nonecdn/python/requirements.txt (line 1)) (3.14.3)
+Requirement already satisfied: httpx<1,>=0.27 in /opt/nonecdn/venv/lib/python3.14/site-packages (from -r /opt/nonecdn/python/requirements.txt (line 2)) (0.28.1)
+Requirement already satisfied: filelock<4,>=3.15 in /opt/nonecdn/venv/lib/python3.14/site-packages (from -r /opt/nonecdn/python/requirements.txt (line 3)) (3.32.5)
+Collecting dnspython<3,>=2.6 (from -r /opt/nonecdn/python/requirements.txt (line 4))
+  Downloading dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (1.8.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (6.7.1)
+Requirement already satisfied: propcache>=0.2.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (0.5.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from aiohttp<4,>=3.10->-r /opt/nonecdn/python/requirements.txt (line 1)) (1.24.5)
+Requirement already satisfied: anyio in /opt/nonecdn/venv/lib/python3.14/site-packages (from httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (4.15.1)
+Requirement already satisfied: certifi in /opt/nonecdn/venv/lib/python3.14/site-packages (from httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (2026.7.22)
+Requirement already satisfied: httpcore==1.* in /opt/nonecdn/venv/lib/python3.14/site-packages (from httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (1.0.9)
+Requirement already satisfied: idna in /opt/nonecdn/venv/lib/python3.14/site-packages (from httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (3.19)
+Requirement already satisfied: h11>=0.16 in /opt/nonecdn/venv/lib/python3.14/site-packages (from httpcore==1.*->httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (0.16.0)
+Requirement already satisfied: typing_extensions>=4.16.0 in /opt/nonecdn/venv/lib/python3.14/site-packages (from anyio->httpx<1,>=0.27->-r /opt/nonecdn/python/requirements.txt (line 2)) (4.16.0)
+Downloading dnspython-2.8.0-py3-none-any.whl (331 kB)
+Installing collected packages: dnspython
+Successfully installed dnspython-2.8.0
+[OK] Requirements installed
+[OK] Runtime directories
+
+===== UNIT TEST =====
+[OK] TTL math
+[OK] Cloudflare CDN detection
+ALL STAGE 4 UNIT TESTS PASSED
+
+===== STORAGE TTL TEST =====
+[OK] last_seen refreshes TTL
+
+===== LIVE DETECTOR TEST =====
+cloudflare.com => CDN cloudflare.com cdn_domain
+cdnjs.cloudflare.com => CDN cloudflare.com cdn_domain
+[OK] Live CDN detection
+Created symlink '/etc/systemd/system/multi-user.target.wants/nonecdn-fetcher.service' → '/etc/systemd/system/nonecdn-fetcher.service'.
+[OK] Fetcher service active
+
+===== ISOLATION =====
+[OK] nginx remains active
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+[OK] nginx configuration remains valid
+
+===== FETCHER STATUS =====
+/root/None_cdn_configs/installer/build-fetcher-cdn-stage4.sh: line 2585: [: missing `]'
+/root/None_cdn_configs/installer/build-fetcher-cdn-stage4.sh: line 2587: ]: command not found
+[WARN] Status not written yet
+
+============================================================
+ STAGE 4 COMPLETE
+============================================================
+
+Fetcher:
+nonecdn-fetcher.service
+
+Stored configs:
+/var/lib/nonecdn/configs
+
+Logs:
+/var/log/nonecdn/fetcher.log
+/var/log/nonecdn/fetcher-error.log
+
+Next:
+SNAPSHOT PANEL + SUBSCRIPTION API
+
+
+====================================================
+Finished: 2026-09-08T18:15:51+00:00
+Exit code: 0
+====================================================

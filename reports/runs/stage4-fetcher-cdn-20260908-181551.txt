@@ -1,0 +1,38 @@
+NoneCDN Stage 4
+Date: 2026-09-08T18:15:51+00:00
+
+Fetcher:
+● nonecdn-fetcher.service - NoneCDN Independent Fetcher
+     Loaded: loaded (/etc/systemd/system/nonecdn-fetcher.service; enabled; preset: enabled)
+     Active: active (running) since Tue 2026-09-08 18:15:46 UTC; 5s ago
+ Invocation: edc87d63e8f844b8b3422d652c093d95
+   Main PID: 2551699 (python)
+      Tasks: 1 (limit: 1540)
+     Memory: 24.4M (peak: 24.4M)
+        CPU: 170ms
+     CGroup: /system.slice/nonecdn-fetcher.service
+             └─2551699 /opt/nonecdn/venv/bin/python -m app.fetcher.engine
+
+Sep 08 18:15:46 limited-lime.ptr.network systemd[1]: Started nonecdn-fetcher.service - NoneCDN Independent Fetcher.
+
+Status:
+{
+  "status": "running",
+  "running": true,
+  "last_cycle_at": "2026-09-08T18:15:51.126614+00:00",
+  "last_success_at": null,
+  "heartbeat_at": "2026-09-08T18:15:51.126770+00:00",
+  "current_source": null,
+  "architecture": "independent-workers-v1",
+  "worker_count": 0,
+  "active_workers": 0,
+  "enabled_sources": 0,
+  "cycle": 5,
+  "total_configs": 0,
+  "error": null,
+  "fetching_sources": 0
+}
+Configs:
+0
+
+Errors:

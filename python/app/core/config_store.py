@@ -3,8 +3,13 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+import time
 
-from datetime import datetime, timezone
+from datetime import (
+    datetime,
+    timezone,
+)
+
 from pathlib import Path
 
 from filelock import FileLock
@@ -23,23 +28,19 @@ LOCK_DIR = (
 )
 
 SOURCE_SNAPSHOT_DIR = (
-    DATA / "source-snapshots"
+    DATA
+    / "source-snapshots"
 )
 
-CONFIG_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
-LOCK_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
-
-SOURCE_SNAPSHOT_DIR.mkdir(
-    parents=True,
-    exist_ok=True
-)
+for directory in (
+    CONFIG_DIR,
+    LOCK_DIR,
+    SOURCE_SNAPSHOT_DIR,
+):
+    directory.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
 
 def now_iso():
@@ -48,18 +49,14 @@ def now_iso():
     ).isoformat()
 
 
-def _path(
-    fingerprint: str
-):
+def _path(fingerprint):
     return (
         CONFIG_DIR
         / f"{fingerprint}.json"
     )
 
 
-def _lock(
-    fingerprint: str
-):
+def _lock(fingerprint):
     return FileLock(
         str(
             LOCK_DIR
@@ -71,12 +68,10 @@ def _lock(
 
 def _atomic_write(
     path: Path,
-    data: dict
+    data: dict,
 ):
     fd, tmp = tempfile.mkstemp(
-        dir=str(
-            path.parent
-        ),
+        dir=str(path.parent),
         prefix=f".{path.name}.",
         suffix=".tmp",
     )
@@ -87,6 +82,7 @@ def _atomic_write(
             "w",
             encoding="utf-8",
         ) as f:
+
             json.dump(
                 data,
                 f,
@@ -101,25 +97,124 @@ def _atomic_write(
 
         os.replace(
             tmp,
-            path
+            path,
         )
 
     finally:
-        if os.path.exists(
-            tmp
-        ):
-            os.unlink(
-                tmp
-            )
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
+def _normalize_ttl(value):
+    try:
+        value = int(value)
+    except Exception:
+        value = 3600
+
+    return max(
+        60,
+        min(
+            value,
+            604800,
+        ),
+    )
+
+
+def _source_expiries(record):
+    value = record.get(
+        "source_expiries"
+    )
+
+    if not isinstance(
+        value,
+        dict,
+    ):
+        value = {}
+
+    return value
+
+
+def _recalculate_record_expiry(
+    record,
+):
+    expiries = (
+        _source_expiries(
+            record
+        )
+    )
+
+    now = int(
+        time.time()
+    )
+
+    active = {
+        str(source_id): int(expiry)
+        for source_id, expiry
+        in expiries.items()
+        if int(expiry) > now
+    }
+
+    record[
+        "source_expiries"
+    ] = active
+
+    record[
+        "source_ids"
+    ] = sorted(
+        active.keys()
+    )
+
+    if active:
+        record[
+            "expires_at"
+        ] = max(
+            active.values()
+        )
+
+        record[
+            "active"
+        ] = True
+
+    else:
+        record[
+            "expires_at"
+        ] = 0
+
+        record[
+            "active"
+        ] = False
+
+    return record
 
 
 def upsert_config(
     item: dict,
     source_id: str,
+    ttl_seconds: int = 3600,
+    classification: dict | None = None,
 ):
-    fingerprint = item[
-        "fingerprint"
-    ]
+    fingerprint = str(
+        item["fingerprint"]
+    )
+
+    source_id = str(
+        source_id
+    )
+
+    ttl_seconds = (
+        _normalize_ttl(
+            ttl_seconds
+        )
+    )
+
+    now_epoch = int(
+        time.time()
+    )
+
+    expiry = (
+        now_epoch
+        + ttl_seconds
+    )
 
     path = _path(
         fingerprint
@@ -128,6 +223,7 @@ def upsert_config(
     with _lock(
         fingerprint
     ):
+
         if path.exists():
             try:
                 record = json.loads(
@@ -135,8 +231,10 @@ def upsert_config(
                         encoding="utf-8"
                     )
                 )
+
             except Exception:
                 record = {}
+
         else:
             record = {}
 
@@ -144,57 +242,216 @@ def upsert_config(
             record
         )
 
-        sources = set(
-            record.get(
-                "source_ids",
-                []
-            )
-        )
-
-        sources.add(
-            source_id
-        )
-
-        now = now_iso()
-
         if created:
             record = {
                 "id": fingerprint,
-                "type": item["type"],
-                "raw": item["raw"],
+
+                "type": item.get(
+                    "type",
+                    "unknown",
+                ),
+
+                # Original source payload is preserved.
+                "raw": item.get(
+                    "raw",
+                    "",
+                ),
+
                 "canonical": item.get(
                     "canonical",
-                    item["raw"],
+                    item.get(
+                        "raw",
+                        "",
+                    ),
                 ),
-                "first_seen_at": now,
-                "last_seen_at": now,
-                "source_ids": sorted(
-                    sources
-                ),
+
+                "first_seen_at":
+                    now_iso(),
+
+                "first_seen_epoch":
+                    now_epoch,
+
+                "source_ids": [],
+
+                "source_expiries": {},
+
+                "active": True,
             }
-        else:
+
+        record[
+            "last_seen_at"
+        ] = now_iso()
+
+        record[
+            "last_seen_epoch"
+        ] = now_epoch
+
+        record[
+            "last_ttl_seconds"
+        ] = ttl_seconds
+
+        expiries = (
+            _source_expiries(
+                record
+            )
+        )
+
+        expiries[
+            source_id
+        ] = expiry
+
+        record[
+            "source_expiries"
+        ] = expiries
+
+        if classification:
             record[
-                "last_seen_at"
-            ] = now
+                "classification"
+            ] = classification.get(
+                "classification"
+            )
 
             record[
-                "source_ids"
-            ] = sorted(
-                sources
+                "classification_reason"
+            ] = classification.get(
+                "reason"
             )
+
+            record[
+                "cdn_provider"
+            ] = classification.get(
+                "provider"
+            )
+
+            record[
+                "classification_evidence"
+            ] = classification.get(
+                "evidence",
+                [],
+            )
+
+        _recalculate_record_expiry(
+            record
+        )
 
         _atomic_write(
             path,
-            record
+            record,
         )
 
         return (
             record,
-            created
+            created,
         )
 
 
-def list_configs():
+def cleanup_expired():
+    now = int(
+        time.time()
+    )
+
+    scanned = 0
+    updated = 0
+    deleted = 0
+    expired_sources = 0
+
+    for path in list(
+        CONFIG_DIR.glob(
+            "*.json"
+        )
+    ):
+        scanned += 1
+
+        fingerprint = (
+            path.stem
+        )
+
+        with _lock(
+            fingerprint
+        ):
+
+            if not path.exists():
+                continue
+
+            try:
+                record = json.loads(
+                    path.read_text(
+                        encoding="utf-8"
+                    )
+                )
+            except Exception:
+                continue
+
+            expiries = (
+                _source_expiries(
+                    record
+                )
+            )
+
+            before = len(
+                expiries
+            )
+
+            expiries = {
+                str(source_id):
+                    int(expiry)
+
+                for source_id, expiry
+                in expiries.items()
+
+                if int(expiry) > now
+            }
+
+            expired_sources += (
+                before
+                - len(expiries)
+            )
+
+            record[
+                "source_expiries"
+            ] = expiries
+
+            _recalculate_record_expiry(
+                record
+            )
+
+            if not record.get(
+                "source_ids"
+            ):
+                try:
+                    path.unlink()
+                    deleted += 1
+
+                except FileNotFoundError:
+                    pass
+
+                continue
+
+            _atomic_write(
+                path,
+                record
+            )
+
+            updated += 1
+
+    return {
+        "scanned": scanned,
+        "updated": updated,
+        "deleted": deleted,
+        "expired_sources":
+            expired_sources,
+    }
+
+
+def list_configs(
+    active_only=True
+):
+    cleanup_expired()
+
+    now = int(
+        time.time()
+    )
+
     result = []
 
     for path in CONFIG_DIR.glob(
@@ -207,298 +464,229 @@ def list_configs():
                 )
             )
 
-            if isinstance(
-                obj,
-                dict
-            ):
-                result.append(
-                    obj
-                )
         except Exception:
             continue
 
+        if not isinstance(
+            obj,
+            dict
+        ):
+            continue
+
+        if active_only:
+            if not obj.get(
+                "active",
+                False
+            ):
+                continue
+
+            if int(
+                obj.get(
+                    "expires_at",
+                    0,
+                )
+                or 0
+            ) <= now:
+                continue
+
+        result.append(obj)
+
     result.sort(
         key=lambda x:
-            x.get(
-                "last_seen_at",
-                ""
+            int(
+                x.get(
+                    "last_seen_epoch",
+                    0,
+                )
+                or 0
             ),
-        reverse=True
+        reverse=True,
     )
 
     return result
 
 
 def config_stats():
-    total = 0
+    values = list_configs()
+
     types = {}
 
-    for item in list_configs():
-        total += 1
-
+    for item in values:
         kind = item.get(
             "type",
-            "unknown"
+            "unknown",
         )
 
         types[kind] = (
             types.get(
                 kind,
-                0
+                0,
             )
             + 1
         )
 
     return {
-        "total": total,
+        "total": len(values),
+        "active": len(values),
         "types": types,
     }
 
 
-def detach_source_from_configs(source_id: str):
-    """
-    Remove one source ID from every stored config.
-
-    Rules:
-    - If other source_ids remain, keep the config.
-    - If no source remains, delete the config file.
-
-    Returns:
-        {
-            scanned,
-            detached,
-            deleted,
-            kept
-        }
-    """
-
-    source_id = str(source_id or "").strip()
-
-    if not source_id:
-        return {
-            "scanned": 0,
-            "detached": 0,
-            "deleted": 0,
-            "kept": 0,
-        }
-
-    scanned = 0
-    detached = 0
-    deleted = 0
-    kept = 0
-
-    for path in list(CONFIG_DIR.glob("*.json")):
-
-        scanned += 1
-
-        try:
-            record = json.loads(
-                path.read_text(
-                    encoding="utf-8"
-                )
-            )
-        except Exception:
-            continue
-
-        if not isinstance(record, dict):
-            continue
-
-        current_sources = record.get(
-            "source_ids",
-            []
-        )
-
-        if not isinstance(current_sources, list):
-            current_sources = []
-
-        if source_id not in current_sources:
-            continue
-
-        detached += 1
-
-        new_sources = [
-            sid
-            for sid in current_sources
-            if str(sid) != source_id
-        ]
-
-        if new_sources:
-
-            record["source_ids"] = sorted(
-                set(
-                    str(x)
-                    for x in new_sources
-                    if x
-                )
-            )
-
-            _atomic_write(
-                path,
-                record
-            )
-
-            kept += 1
-
-        else:
-
-            try:
-                path.unlink()
-                deleted += 1
-            except FileNotFoundError:
-                pass
-
-    remove_source_snapshot(
-        source_id
-    )
-
-    return {
-        "scanned": scanned,
-        "detached": detached,
-        "deleted": deleted,
-        "kept": kept,
-    }
-
-
-def detach_sources_from_configs(source_ids):
-    """
-    Bulk version of detach_source_from_configs().
-
-    A config survives if at least one source_id remains.
-    """
-
-    ids = {
-        str(x).strip()
-        for x in source_ids
-        if str(x).strip()
-    }
-
-    if not ids:
-        return {
-            "scanned": 0,
-            "detached": 0,
-            "deleted": 0,
-            "kept": 0,
-        }
-
-    scanned = 0
-    detached = 0
-    deleted = 0
-    kept = 0
-
-    for path in list(CONFIG_DIR.glob("*.json")):
-
-        scanned += 1
-
-        try:
-            record = json.loads(
-                path.read_text(
-                    encoding="utf-8"
-                )
-            )
-        except Exception:
-            continue
-
-        if not isinstance(record, dict):
-            continue
-
-        current_sources = record.get(
-            "source_ids",
-            []
-        )
-
-        if not isinstance(current_sources, list):
-            current_sources = []
-
-        old_set = {
-            str(x)
-            for x in current_sources
-            if x
-        }
-
-        if not (
-            old_set
-            & ids
-        ):
-            continue
-
-        detached += 1
-
-        new_set = (
-            old_set
-            - ids
-        )
-
-        if new_set:
-
-            record["source_ids"] = sorted(
-                new_set
-            )
-
-            _atomic_write(
-                path,
-                record
-            )
-
-            kept += 1
-
-        else:
-
-            try:
-                path.unlink()
-                deleted += 1
-            except FileNotFoundError:
-                pass
-
-    return {
-        "scanned": scanned,
-        "detached": detached,
-        "deleted": deleted,
-        "kept": kept,
-    }
-
-
-
-def _source_snapshot_path(
+def detach_source_from_configs(
     source_id: str
 ):
     source_id = str(
         source_id
     ).strip()
 
+    result = {
+        "scanned": 0,
+        "detached": 0,
+        "deleted": 0,
+        "kept": 0,
+    }
+
+    if not source_id:
+        return result
+
+    for path in list(
+        CONFIG_DIR.glob(
+            "*.json"
+        )
+    ):
+        result[
+            "scanned"
+        ] += 1
+
+        fingerprint = (
+            path.stem
+        )
+
+        with _lock(
+            fingerprint
+        ):
+
+            try:
+                record = json.loads(
+                    path.read_text(
+                        encoding="utf-8"
+                    )
+                )
+            except Exception:
+                continue
+
+            expiries = (
+                _source_expiries(
+                    record
+                )
+            )
+
+            if source_id not in expiries:
+                continue
+
+            result[
+                "detached"
+            ] += 1
+
+            expiries.pop(
+                source_id,
+                None,
+            )
+
+            record[
+                "source_expiries"
+            ] = expiries
+
+            _recalculate_record_expiry(
+                record
+            )
+
+            if not record.get(
+                "source_ids"
+            ):
+                try:
+                    path.unlink()
+
+                    result[
+                        "deleted"
+                    ] += 1
+
+                except FileNotFoundError:
+                    pass
+
+            else:
+                _atomic_write(
+                    path,
+                    record,
+                )
+
+                result[
+                    "kept"
+                ] += 1
+
+    remove_source_snapshot(
+        source_id
+    )
+
+    return result
+
+
+def detach_sources_from_configs(
+    source_ids
+):
+    result = {
+        "scanned": 0,
+        "detached": 0,
+        "deleted": 0,
+        "kept": 0,
+    }
+
+    for source_id in {
+        str(x).strip()
+        for x in source_ids
+        if str(x).strip()
+    }:
+        one = (
+            detach_source_from_configs(
+                source_id
+            )
+        )
+
+        for key in result:
+            result[key] += (
+                one.get(
+                    key,
+                    0,
+                )
+            )
+
+    return result
+
+
+# ============================================================
+# LEGACY SNAPSHOT API
+#
+# Kept for panel compatibility, but TTL now owns removal.
+# A source temporarily returning a different list must NOT
+# instantly delete still-valid configs.
+# ============================================================
+
+def _source_snapshot_path(
+    source_id
+):
     return (
         SOURCE_SNAPSHOT_DIR
         / f"{source_id}.json"
     )
 
 
-def _source_snapshot_lock(
-    source_id: str
-):
-    source_id = str(
-        source_id
-    ).strip()
-
-    return FileLock(
-        str(
-            LOCK_DIR
-            / f"source-snapshot-{source_id}.lock"
-        ),
-        timeout=30,
-    )
-
-
 def read_source_snapshot(
-    source_id: str
+    source_id
 ):
-    """
-    Return the last authoritative config fingerprint
-    snapshot for one source.
-
-    None means no baseline exists yet.
-    """
-
-    path = _source_snapshot_path(
-        source_id
+    path = (
+        _source_snapshot_path(
+            source_id
+        )
     )
 
     if not path.exists():
@@ -513,12 +701,6 @@ def read_source_snapshot(
     except Exception:
         return None
 
-    if not isinstance(
-        obj,
-        dict
-    ):
-        return None
-
     values = obj.get(
         "fingerprints"
     )
@@ -529,54 +711,58 @@ def read_source_snapshot(
     ):
         return None
 
-    return {
-        str(x).strip()
+    return set(
+        str(x)
         for x in values
-        if str(x).strip()
-    }
+    )
 
 
 def write_source_snapshot(
-    source_id: str,
+    source_id,
     fingerprints,
 ):
-    source_id = str(
-        source_id
-    ).strip()
-
     values = sorted({
-        str(x).strip()
+        str(x)
         for x in fingerprints
-        if str(x).strip()
     })
 
     data = {
-        "source_id": source_id,
-        "updated_at": now_iso(),
-        "count": len(values),
-        "fingerprints": values,
+        "source_id":
+            str(source_id),
+
+        "updated_at":
+            now_iso(),
+
+        "count":
+            len(values),
+
+        "fingerprints":
+            values,
     }
 
     _atomic_write(
         _source_snapshot_path(
             source_id
         ),
-        data
+        data,
     )
 
     return data
 
 
 def remove_source_snapshot(
-    source_id: str
+    source_id
 ):
-    path = _source_snapshot_path(
-        source_id
+    path = (
+        _source_snapshot_path(
+            source_id
+        )
     )
 
     try:
         path.unlink()
         return True
+
     except FileNotFoundError:
         return False
 
@@ -584,270 +770,109 @@ def remove_source_snapshot(
 def remove_source_snapshots(
     source_ids
 ):
-    removed = 0
+    count = 0
 
-    for source_id in {
-        str(x).strip()
-        for x in source_ids
-        if str(x).strip()
-    }:
+    for source_id in source_ids:
         if remove_source_snapshot(
             source_id
         ):
-            removed += 1
+            count += 1
 
-    return removed
+    return count
 
 
 def delete_all_source_snapshots():
-    removed = 0
+    count = 0
 
-    for path in list(
-        SOURCE_SNAPSHOT_DIR.glob(
-            "*.json"
-        )
+    for path in SOURCE_SNAPSHOT_DIR.glob(
+        "*.json"
     ):
         try:
             path.unlink()
-            removed += 1
+            count += 1
+
         except FileNotFoundError:
             pass
 
-    return removed
+    return count
 
 
 def sync_source_snapshot(
-    source_id: str,
+    source_id,
     current_fingerprints,
-    authoritative: bool = True,
+    authoritative=True,
 ):
-    """
-    Synchronize ownership for exactly ONE source.
+    # IMPORTANT:
+    #
+    # The old project removed configs immediately if a config
+    # disappeared from a source snapshot.
+    #
+    # NoneCDN deliberately does NOT do this.
+    #
+    # Lifetime is controlled solely by last_seen + TTL.
 
-    IMPORTANT:
-
-    Only an authoritative/complete source cycle is allowed
-    to remove old ownership.
-
-    New configs are already attached by upsert_config().
-
-    For fingerprints that existed in the previous
-    authoritative source snapshot but are absent now:
-
-        - remove this source_id from source_ids
-        - keep config if another source owns it
-        - delete config if no source remains
-
-    The first successful authoritative cycle only creates
-    a baseline and does not delete anything.
-    """
-
-    source_id = str(
-        source_id or ""
-    ).strip()
-
-    current = {
-        str(x).strip()
+    values = {
+        str(x)
         for x in current_fingerprints
-        if str(x).strip()
     }
 
-    result = {
-        "source_id": source_id,
+    previous = (
+        read_source_snapshot(
+            source_id
+        )
+    )
+
+    write_source_snapshot(
+        source_id,
+        values,
+    )
+
+    return {
+        "source_id":
+            str(source_id),
 
         "authoritative":
             bool(authoritative),
 
         "current":
-            len(current),
+            len(values),
 
         "previous":
-            0,
+            len(previous or set()),
 
         "missing":
-            0,
+            len(
+                (previous or set())
+                - values
+            ),
 
-        "detached":
-            0,
-
-        "deleted":
-            0,
-
-        "kept_shared":
-            0,
+        "detached": 0,
+        "deleted": 0,
+        "kept_shared": 0,
 
         "baseline_created":
-            False,
+            previous is None,
 
-        "snapshot_updated":
-            False,
+        "snapshot_updated": True,
+
+        "ttl_managed": True,
     }
 
-    if not source_id:
-        return result
-
-    if not authoritative:
-        return result
-
-    with _source_snapshot_lock(
-        source_id
-    ):
-
-        previous = read_source_snapshot(
-            source_id
-        )
-
-        # First authoritative cycle:
-        # establish baseline only.
-        if previous is None:
-
-            write_source_snapshot(
-                source_id,
-                current
-            )
-
-            result[
-                "baseline_created"
-            ] = True
-
-            result[
-                "snapshot_updated"
-            ] = True
-
-            return result
-
-        result[
-            "previous"
-        ] = len(
-            previous
-        )
-
-        missing = (
-            previous
-            - current
-        )
-
-        result[
-            "missing"
-        ] = len(
-            missing
-        )
-
-        for fingerprint in missing:
-
-            path = _path(
-                fingerprint
-            )
-
-            if not path.exists():
-                continue
-
-            with _lock(
-                fingerprint
-            ):
-
-                if not path.exists():
-                    continue
-
-                try:
-                    record = json.loads(
-                        path.read_text(
-                            encoding="utf-8"
-                        )
-                    )
-                except Exception:
-                    continue
-
-                if not isinstance(
-                    record,
-                    dict
-                ):
-                    continue
-
-                sources = record.get(
-                    "source_ids",
-                    []
-                )
-
-                if not isinstance(
-                    sources,
-                    list
-                ):
-                    sources = []
-
-                source_set = {
-                    str(x)
-                    for x in sources
-                    if x
-                }
-
-                if source_id not in source_set:
-                    continue
-
-                source_set.discard(
-                    source_id
-                )
-
-                result[
-                    "detached"
-                ] += 1
-
-                if source_set:
-
-                    record[
-                        "source_ids"
-                    ] = sorted(
-                        source_set
-                    )
-
-                    _atomic_write(
-                        path,
-                        record
-                    )
-
-                    result[
-                        "kept_shared"
-                    ] += 1
-
-                else:
-
-                    try:
-                        path.unlink()
-
-                        result[
-                            "deleted"
-                        ] += 1
-
-                    except FileNotFoundError:
-                        pass
-
-        write_source_snapshot(
-            source_id,
-            current
-        )
-
-        result[
-            "snapshot_updated"
-        ] = True
-
-    return result
 
 def delete_all_configs():
-    """
-    Delete every stored config.
-    Used when all sources are deleted.
-    """
-
     delete_all_source_snapshots()
 
     deleted = 0
 
     for path in list(
-        CONFIG_DIR.glob("*.json")
+        CONFIG_DIR.glob(
+            "*.json"
+        )
     ):
         try:
             path.unlink()
             deleted += 1
+
         except FileNotFoundError:
             pass
 
