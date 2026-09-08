@@ -1,0 +1,26 @@
+NoneCDN Panel v0.1
+Date: 2026-09-08T17:56:13+00:00
+
+Port: 18088
+
+FPM socket:
+srw-rw---- 1 www-data www-data 0 Sep  8 17:56 /run/php/nonecdn-panel.sock
+
+Nginx:
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+HTTP:
+HTTP/1.1 200 OK
+Server: nginx/1.28.3 (Ubuntu)
+Date: Tue, 08 Sep 2026 17:56:13 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: keep-alive
+Set-Cookie: NONECDNSESSID=1d087ed176703b4d89ecaebfcdeb52b9; path=/; HttpOnly; SameSite=Strict
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+
+
+Database:
+-rw-r----- 1 nonecdn nonecdn 140K Sep  8 17:50 /var/lib/nonecdn/database/nonecdn.sqlite
