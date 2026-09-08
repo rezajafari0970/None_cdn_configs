@@ -88,6 +88,8 @@ git add \
     reports \
     scripts \
     config \
+    python \
+    reference \
     audit \
     README.md \
     .gitignore \

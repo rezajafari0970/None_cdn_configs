@@ -1,0 +1,17 @@
+============================================================
+ NoneCDN - CORE STAGE 1
+ Database + Migration + Settings + Sources
+============================================================
+Started: 2026-09-08T17:49:27+00:00
+
+
+===== DEPLOYING SOURCE =====
+[OK] Code deployed
+
+===== MIGRATION =====
+Could not open input file: /root/None_cdn_configs/scripts/migrate.php
+
+====================================================
+Finished: 2026-09-08T17:49:27+00:00
+Exit code: 1
+====================================================

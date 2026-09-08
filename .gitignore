@@ -70,3 +70,8 @@ node_modules/
 .idea/
 .vscode/
 *.swp
+
+
+# Development audit logs are intentionally versioned
+!audit/
+!audit/**

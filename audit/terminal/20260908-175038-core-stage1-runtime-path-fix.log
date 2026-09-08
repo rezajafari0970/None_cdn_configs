@@ -1,0 +1,94 @@
+============================================================
+ NoneCDN - CORE STAGE 1
+ Database + Migration + Settings + Sources
+============================================================
+Started: 2026-09-08T17:50:38+00:00
+
+
+===== DEPLOYING SOURCE =====
+[OK] Code deployed
+
+===== MIGRATION =====
+[MIGRATED] 20260908_000001
+[DEFAULT] fetcher.enabled
+[DEFAULT] fetch.interval_seconds
+[DEFAULT] config.default_ttl_seconds
+[DEFAULT] fetch.request_timeout_seconds
+[DEFAULT] fetch.max_parallel
+[DEFAULT] cleanup.enabled
+[DEFAULT] cleanup.interval_seconds
+[DEFAULT] cdn_detection.enabled
+[DEFAULT] classification.unknown_policy
+[DEFAULT] watchdog.enabled
+[DEFAULT] watchdog.stall_threshold_seconds
+[DEFAULT] watchdog.auto_recovery
+[DEFAULT] audit.runtime_enabled
+[DEFAULT] panel.timezone
+[DEFAULT] subscription.shuffle
+[OK] Settings initialized
+
+===== INTEGRATION TEST =====
+===== DATABASE =====
+journal_mode=wal
+[OK] WAL
+[OK] Foreign keys
+===== SETTINGS =====
+[OK] Typed settings
+===== SOURCES =====
+[OK] Source create
+[OK] Source read
+[OK] Source update
+===== TTL LOGIC =====
+[OK] last_seen TTL refresh
+===== CLEANUP =====
+[OK] Source delete
+
+ALL STAGE 1 TESTS PASSED
+
+===== SQLITE INTEGRITY =====
+ok
+[OK] SQLite integrity
+
+===== TABLES =====
+audit_events         configs              overrides          
+cdn_rules            fetch_cycles         settings           
+config_observations  fetch_results        sources            
+config_sources       migrations           system_health      
+
+===== DEFAULT SETTINGS =====
+key                               value   type  
+--------------------------------  ------  ------
+audit.runtime_enabled             1       bool  
+cdn_detection.enabled             1       bool  
+classification.unknown_policy     reject  string
+cleanup.enabled                   1       bool  
+cleanup.interval_seconds          10      int   
+config.default_ttl_seconds        3600    int   
+fetch.interval_seconds            10      int   
+fetch.max_parallel                50      int   
+fetch.request_timeout_seconds     7       int   
+fetcher.enabled                   1       bool  
+panel.timezone                    UTC     string
+subscription.shuffle              1       bool  
+watchdog.auto_recovery            1       bool  
+watchdog.enabled                  1       bool  
+watchdog.stall_threshold_seconds  30      int   
+
+============================================================
+ CORE STAGE 1 COMPLETE
+============================================================
+
+Database:
+/var/lib/nonecdn/database/nonecdn.sqlite
+
+Report:
+/root/None_cdn_configs/reports/runs/core-stage1-20260908-175038.txt
+
+Next:
+PANEL v0.1
+
+
+====================================================
+Finished: 2026-09-08T17:50:38+00:00
+Exit code: 0
+====================================================

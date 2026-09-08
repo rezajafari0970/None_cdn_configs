@@ -531,6 +531,7 @@ PY
 cat > "$PYROOT/requirements.txt" <<'EOF'
 aiohttp>=3.10,<4
 httpx>=0.27,<1
+filelock>=3.15,<4
 EOF
 
 # ============================================================

@@ -1,0 +1,39 @@
+============================================================
+ NoneCDN PANEL v0.1
+============================================================
+Started: 2026-09-08T17:56:11+00:00
+
+[OK] Panel password initialized
+
+============================================================
+ PANEL PASSWORD
+============================================================
+EFwNw1d7YS418ktO1gri
+============================================================
+
+[08-Sep-2026 17:56:11] NOTICE: configuration file /etc/php/8.5/fpm/php-fpm.conf test is successful
+[OK] Dedicated PHP-FPM pool
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+[OK] Nginx listener :18088
+[OK] Login page HTTP test
+[OK] Hard foreign key enforcement test
+
+============================================================
+ PANEL v0.1 COMPLETE
+============================================================
+
+URL:
+http://SERVER-IP:18088/
+
+If this was the first installation,
+save the password shown above.
+
+Next:
+Parser + CDN Detection Engine
+
+
+====================================================
+Finished: 2026-09-08T17:56:13+00:00
+Exit code: 0
+====================================================

@@ -95,3 +95,32 @@ PANEL v0.1 COMPLETE
 Panel port:
 
 18088
+
+## Snapshot UI/FETCH Base - Stage 3
+
+Completed: 2026-09-08T18:09:28+00:00
+
+- [x] Config Location snapshot imported as reference
+- [x] Original panel UI preserved
+- [x] Original Source management actions preserved
+- [x] Fetch Now preserved
+- [x] Reset Runtime preserved
+- [x] Rebuild preserved
+- [x] Clear Data preserved
+- [x] Bulk source tools preserved
+- [x] Independent-worker fetcher imported
+- [x] Paths isolated to /var/lib/nonecdn
+- [x] Production path isolated to /opt/nonecdn
+- [x] TTL backend added
+- [x] Last-seen TTL helper added
+- [x] Python virtual environment installed
+- [x] Import/syntax tests passed
+
+Status:
+
+SNAPSHOT BASE IMPORTED
+
+Next:
+
+Adapt Config Store for TTL + Non-CDN classification
+and connect the new Python panel to the NoneCDN runtime.

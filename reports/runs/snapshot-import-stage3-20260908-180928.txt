@@ -1,0 +1,36 @@
+NoneCDN Snapshot Import Stage 3
+Date: 2026-09-08T18:09:28+00:00
+
+Snapshot:
+/root/config-location-final-20260830-170522.tar.gz
+
+Imported UI:
+/root/None_cdn_configs/python/app/panel/server.py
+
+Imported Fetcher:
+/root/None_cdn_configs/python/app/fetcher/engine.py
+
+Preserved UI actions:
+2503:Fetch Now
+2520:Reset Runtime
+2533:        'Rebuild کامل همین Source انجام شود؟\\n\\n'
+2547:Rebuild
+2570:Clear Data
+2760:Fetch Now
+3500:                "Rebuild Source ناموفق بود: "
+3551:        f"Rebuild برای Source «{source_name}» انجام شد."
+3694:                "Reset Runtime ناموفق بود: "
+
+Runtime namespace:
+/root/None_cdn_configs/python/app/core/source_runtime.py:    "/var/lib/nonecdn"
+/root/None_cdn_configs/python/app/core/storage.py:DATA_DIR = Path("/var/lib/nonecdn")
+/root/None_cdn_configs/python/app/core/config_store.py:    "/var/lib/nonecdn"
+/root/None_cdn_configs/python/app/core/source_manager.py:SOURCE_FILE = Path("/var/lib/nonecdn/sources/sources.json")
+/root/None_cdn_configs/python/app/panel/server.py:    "/var/lib/nonecdn/state/fetcher-status.json"
+/root/None_cdn_configs/python/app/panel/server.py:        "/var/lib/nonecdn/source-triggers"
+/root/None_cdn_configs/python/app/panel/server.py:        "/var/lib/nonecdn/source-triggers"
+/root/None_cdn_configs/python/app/panel/server.py:        "/var/lib/nonecdn/state/fetch-now.trigger"
+/root/None_cdn_configs/python/app/panel/server.py:            "/var/lib/nonecdn/state/panel-self-test.tmp"
+/root/None_cdn_configs/python/app/fetcher/engine.py:    "/var/lib/nonecdn"
+
+Config Location residue check:

@@ -1,0 +1,97 @@
+
+============================================================
+ NONE CDN CONFIG COLLECTOR
+ COMPLETE DEVELOPMENT BOOTSTRAP
+============================================================
+Started: 2026-09-08T17:43:09+00:00
+
+[OK] Running as root
+
+============================================================
+ STAGE 1 - BASE DEPENDENCIES
+============================================================
+Hit:1 http://archive.ubuntu.com/ubuntu resolute InRelease
+Hit:2 http://security.ubuntu.com/ubuntu resolute-security InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu resolute-updates InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu resolute-backports InRelease
+Reading package lists...
+[OK] ca-certificates
+[OK] curl
+[OK] wget
+[OK] git
+[OK] jq
+[OK] unzip
+[OK] zip
+[OK] tar
+[OK] rsync
+[OK] sqlite3
+[INSTALL] dnsutils
+Reading package lists...
+Building dependency tree...
+Reading state information...
+bind9-dnsutils is already the newest version (1:9.20.24-1ubuntu0.3).
+Solving dependencies...
+0 upgraded, 0 newly installed, 0 to remove and 76 not upgraded.
+[OK] lsof
+[OK] acl
+[OK] procps
+[OK] iproute2
+[OK] openssl
+[OK] cron
+
+============================================================
+ STAGE 2 - PHP
+============================================================
+PHP version: 8.5
+[OK] PHP extension: curl
+[WARNING] Missing PHP extension: mbstring
+[WARNING] Missing PHP extension: openssl
+[WARNING] Missing PHP extension: json
+[OK] PHP extension: sockets
+[WARNING] Missing PHP extension: pcntl
+[OK] PHP extension: posix
+
+============================================================
+ STAGE 3 - PHP SQLITE
+============================================================
+[OK] sqlite3
+[OK] pdo_sqlite
+[OK] SQLite functional test
+
+============================================================
+ STAGE 4 - GITHUB REPOSITORY
+============================================================
+[OK] Repository already exists
+[OK] Git repository ready
+
+============================================================
+ STAGE 5 - PROJECT STRUCTURE
+============================================================
+
+============================================================
+ STAGE 6 - ISOLATED USER
+============================================================
+[OK] nonecdn already exists
+
+============================================================
+ STAGE 7 - ISOLATED DIRECTORIES
+============================================================
+
+============================================================
+ STAGE 8 - PERMISSION TEST
+============================================================
+[OK] writable: /var/lib/nonecdn/database
+[OK] writable: /var/lib/nonecdn/state
+[OK] writable: /var/lib/nonecdn/cache
+[OK] writable: /var/log/nonecdn
+[OK] writable: /run/nonecdn
+[OK] Production code protected
+
+============================================================
+ STAGE 9 - SQLITE RUNTIME TEST
+============================================================
+[OK] Runtime SQLite WAL test
+
+============================================================
+ STAGE 10 - DEVELOPMENT AUDIT RUNNER
+============================================================
