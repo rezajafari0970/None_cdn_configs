@@ -1,0 +1,57 @@
+NoneCDN Complete Bootstrap
+
+Date:
+2026-09-08T17:43:15+00:00
+
+Hostname:
+limited-lime.ptr.network
+
+OS:
+PRETTY_NAME="Ubuntu 26.04 LTS"
+
+PHP:
+PHP 8.5.4 (cli) (built: Jul 16 2026 18:56:38) (NTS)
+
+PHP SQLite:
+pdo_sqlite
+sqlite3
+
+SQLite:
+3.46.1 2024-08-13 09:16:08 c9c2ab54ba1f5f46360f1b4f35d849cd3f080e6fc2b6c60e91b16c63f69aalt1 (64-bit)
+
+Git:
+git version 2.53.0
+
+Runtime user:
+uid=995(nonecdn) gid=982(nonecdn) groups=982(nonecdn)
+
+Directories:
+drwxr-xr-x root:root /opt/nonecdn
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/database
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/state
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/cache
+drwxr-x--- nonecdn:nonecdn /var/log/nonecdn
+drwxr-x--- nonecdn:nonecdn /run/nonecdn
+
+Nginx validation:
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+Listening ports:
+Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                    
+udp   UNCONN 0      0          127.0.0.1:323        0.0.0.0:*    users:(("chronyd",pid=21858,fd=4))                        
+udp   UNCONN 0      0          127.0.0.1:34837      0.0.0.0:*    users:(("xray",pid=2478993,fd=7))                         
+udp   UNCONN 0      0         127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=19))               
+udp   UNCONN 0      0      127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=17))               
+udp   UNCONN 0      0          127.0.0.1:51417      0.0.0.0:*    users:(("xray",pid=2479423,fd=7))                         
+udp   UNCONN 0      0              [::1]:323           [::]:*    users:(("chronyd",pid=21858,fd=5))                        
+tcp   LISTEN 0      511          0.0.0.0:1010       0.0.0.0:*    users:(("nginx",pid=93762,fd=5),("nginx",pid=59127,fd=5)) 
+tcp   LISTEN 0      4096         0.0.0.0:80         0.0.0.0:*    users:(("php",pid=34084,fd=4))                            
+tcp   LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=18))               
+tcp   LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=2571033,fd=3),("systemd",pid=1,fd=236))
+tcp   LISTEN 0      4096       127.0.0.1:51417      0.0.0.0:*    users:(("xray",pid=2479423,fd=4))                         
+tcp   LISTEN 0      4096       127.0.0.1:34837      0.0.0.0:*    users:(("xray",pid=2478993,fd=4))                         
+tcp   LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=20))               
+tcp   LISTEN 0      511             [::]:1010          [::]:*    users:(("nginx",pid=93762,fd=6),("nginx",pid=59127,fd=6)) 
+tcp   LISTEN 0      4096            [::]:22            [::]:*    users:(("sshd",pid=2571033,fd=4),("systemd",pid=1,fd=237))
