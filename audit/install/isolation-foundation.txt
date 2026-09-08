@@ -1,0 +1,68 @@
+==============================================
+ NONE CDN - ISOLATION FOUNDATION
+==============================================
+Started: 2026-09-08T17:37:38+00:00
+
+[OK] Running as root
+[OK] Repository found
+
+===== SYSTEM USER =====
+[CREATED] nonecdn
+
+uid=995(nonecdn) gid=982(nonecdn) groups=982(nonecdn)
+
+===== DIRECTORIES =====
+[OK] directories created
+
+===== TMPFILES =====
+[OK] /run/nonecdn persistence rule installed
+
+===== PERMISSIONS =====
+drwxr-xr-x root:root /opt/nonecdn
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/database
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/state
+drwxr-x--- nonecdn:nonecdn /var/lib/nonecdn/cache
+drwxr-x--- nonecdn:nonecdn /var/log/nonecdn
+drwxr-x--- nonecdn:nonecdn /run/nonecdn
+
+===== WRITE ISOLATION TEST =====
+[OK] nonecdn can write: /var/lib/nonecdn/database
+[OK] nonecdn can write: /var/lib/nonecdn/state
+[OK] nonecdn can write: /var/lib/nonecdn/cache
+[OK] nonecdn can write: /var/log/nonecdn
+[OK] nonecdn can write: /run/nonecdn
+[OK] nonecdn cannot modify production code
+
+===== SQLITE TEST AS NONECDN =====
+[OK] SQLite read/write as nonecdn
+
+===== EXISTING INFRASTRUCTURE =====
+--- NGINX ---
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+--- PORT 80 ---
+LISTEN 0      4096         0.0.0.0:80        0.0.0.0:*    users:(("php",pid=34084,fd=4))                            
+
+--- PORT 1010 ---
+LISTEN 0      511          0.0.0.0:1010      0.0.0.0:*    users:(("nginx",pid=93762,fd=5),("nginx",pid=59127,fd=5)) 
+LISTEN 0      511             [::]:1010         [::]:*    users:(("nginx",pid=93762,fd=6),("nginx",pid=59127,fd=6)) 
+
+--- NONECDN PORT CHECK ---
+[OK] NoneCDN opened no network ports
+
+===== RESULT =====
+[OK] Dedicated user
+[OK] Dedicated database directory
+[OK] Dedicated state directory
+[OK] Dedicated cache directory
+[OK] Dedicated log directory
+[OK] Dedicated runtime directory
+[OK] Runtime survives reboot via tmpfiles
+[OK] Production directory protected from worker writes
+[OK] SQLite tested as nonecdn
+[OK] No NoneCDN network port created
+
+Completed: 2026-09-08T17:37:38+00:00
+==============================================
