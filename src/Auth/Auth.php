@@ -15,9 +15,9 @@ final class Auth
 
     public static function setPassword(string $password): void
     {
-        if (strlen($password) < 10) {
+        if (strlen($password) < 4) {
             throw new \InvalidArgumentException(
-                'Password must contain at least 10 characters.'
+                'Password must contain at least 4 characters.'
             );
         }
 
