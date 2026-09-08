@@ -1,0 +1,146 @@
+========================================
+ NONE CDN - DEPENDENCY AUDIT
+========================================
+Date: 2026-09-08T17:35:27+00:00
+
+===== PHP =====
+PHP 8.5.4 (cli) (built: Jul 16 2026 18:56:38) (NTS)
+Copyright (c) The PHP Group
+Built by Ubuntu
+Zend Engine v4.5.4, Copyright (c) Zend Technologies
+    with Zend OPcache v8.5.4, Copyright (c), by Zend Technologies
+
+===== PHP MODULES =====
+
+
+calendar
+Core
+ctype
+curl
+date
+dom
+exif
+FFI
+fileinfo
+filter
+ftp
+gettext
+hash
+iconv
+json
+lexbor
+libxml
+mbstring
+openssl
+pcntl
+pcre
+PDO
+Phar
+[PHP Modules]
+posix
+random
+readline
+Reflection
+session
+shmop
+SimpleXML
+sockets
+sodium
+SPL
+standard
+sysvmsg
+sysvsem
+sysvshm
+tokenizer
+uri
+xml
+xmlreader
+xmlwriter
+xsl
+[Zend Modules]
+Zend OPcache
+Zend OPcache
+zip
+zlib
+
+===== REQUIRED PHP MODULE CHECK =====
+[OK]      curl
+[MISSING] sqlite3
+[MISSING] pdo_sqlite
+[OK]      mbstring
+[OK]      openssl
+[OK]      json
+[OK]      sockets
+[OK]      pcntl
+[OK]      posix
+
+===== BINARIES =====
+[OK]      php          /usr/bin/php
+[OK]      curl         /usr/bin/curl
+[OK]      git          /usr/bin/git
+[OK]      sqlite3      /usr/bin/sqlite3
+[OK]      dig          /usr/bin/dig
+[OK]      host         /usr/bin/host
+[OK]      nslookup     /usr/bin/nslookup
+[OK]      jq           /usr/bin/jq
+[OK]      flock        /usr/bin/flock
+[OK]      timeout      /usr/bin/timeout
+[OK]      systemctl    /usr/bin/systemctl
+[OK]      ss           /usr/bin/ss
+[OK]      openssl      /usr/bin/openssl
+
+===== PHP-FPM =====
+● php8.5-fpm.service - The PHP 8.5 FastCGI Process Manager
+     Loaded: loaded (/usr/lib/systemd/system/php8.5-fpm.service; enabled; preset: enabled)
+     Active: active (running) since Sat 2026-09-05 06:14:19 UTC; 3 days ago
+ Invocation: b1008524304247858c4e2a72fc61b265
+       Docs: man:php-fpm8.5(8)
+   Main PID: 2582835 (php-fpm8.5)
+     Status: "Processes active: 0, idle: 3, Requests: 146822, slow: 0, Traffic: 1.80req/sec"
+      Tasks: 4 (limit: 1540)
+     Memory: 30.1M (peak: 67.2M)
+        CPU: 34min 41.113s
+     CGroup: /system.slice/php8.5-fpm.service
+             ├─2458380 "php-fpm: pool www"
+             ├─2460062 "php-fpm: pool www"
+             ├─2460779 "php-fpm: pool www"
+             └─2582835 "php-fpm: master process (/etc/php/8.5/fpm/php-fpm.conf)"
+
+Sep 05 06:14:19 limited-lime.ptr.network systemd[1]: Starting php8.5-fpm.service - The PHP 8.5 FastCGI Process Manager...
+Sep 05 06:14:19 limited-lime.ptr.network systemd[1]: Started php8.5-fpm.service - The PHP 8.5 FastCGI Process Manager.
+
+===== NGINX TEST ONLY =====
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+===== PORTS CURRENTLY IN USE =====
+Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                    
+udp   UNCONN 0      0          127.0.0.1:323        0.0.0.0:*    users:(("chronyd",pid=21858,fd=4))                        
+udp   UNCONN 0      0          127.0.0.1:45889      0.0.0.0:*    users:(("xray",pid=2465465,fd=7))                         
+udp   UNCONN 0      0         127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=19))               
+udp   UNCONN 0      0      127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=17))               
+udp   UNCONN 0      0              [::1]:323           [::]:*    users:(("chronyd",pid=21858,fd=5))                        
+tcp   LISTEN 0      511          0.0.0.0:1010       0.0.0.0:*    users:(("nginx",pid=93762,fd=5),("nginx",pid=59127,fd=5)) 
+tcp   LISTEN 0      4096       127.0.0.1:45889      0.0.0.0:*    users:(("xray",pid=2465465,fd=4))                         
+tcp   LISTEN 0      4096         0.0.0.0:80         0.0.0.0:*    users:(("php",pid=34084,fd=4))                            
+tcp   LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=18))               
+tcp   LISTEN 0      4096         0.0.0.0:22         0.0.0.0:*    users:(("sshd",pid=2571033,fd=3),("systemd",pid=1,fd=236))
+tcp   LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=10903,fd=20))               
+tcp   LISTEN 0      511             [::]:1010          [::]:*    users:(("nginx",pid=93762,fd=6),("nginx",pid=59127,fd=6)) 
+tcp   LISTEN 0      4096            [::]:22            [::]:*    users:(("sshd",pid=2571033,fd=4),("systemd",pid=1,fd=237))
+
+===== EXISTING SYSTEM USERS =====
+[FREE] nonecdn
+
+===== EXISTING SYSTEMD NAMES =====
+[FREE] nonecdn-fetcher.service
+[FREE] nonecdn-watchdog.service
+[FREE] nonecdn-panel.service
+
+===== PROPOSED DIRECTORIES =====
+[FREE]   /opt/nonecdn
+[FREE]   /var/lib/nonecdn
+[FREE]   /var/log/nonecdn
+[FREE]   /run/nonecdn
+
+===== AUDIT COMPLETE =====
