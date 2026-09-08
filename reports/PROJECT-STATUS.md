@@ -1,31 +1,67 @@
 # None CDN Config Collector - Project Status
 
-Generated: 2026-09-08T17:43:15+00:00
+Updated: 2026-09-08T17:50:38+00:00
 
-## Development bootstrap
+## Infrastructure
 
-- [x] Git repository
-- [x] Deploy key
-- [x] Base dependencies
+- [x] GitHub development repository
+- [x] Development audit runner
+- [x] Isolated runtime user
+- [x] Isolated directories
 - [x] PHP
-- [x] PHP SQLite
-- [x] SQLite WAL test
-- [x] Dedicated Linux user
-- [x] Isolated runtime directories
-- [x] Runtime permission isolation
-- [x] Development Audit Runner
-- [x] Automated Git commit/push helper
-- [x] Modular source structure
+- [x] SQLite
+- [x] SQLite WAL
 
-## Current state
+## Core Stage 1
 
-READY FOR CORE DEVELOPMENT
+- [x] Database connection engine
+- [x] SQLite WAL configuration
+- [x] Foreign key enforcement
+- [x] Migration engine
+- [x] Main database schema
+- [x] Typed Settings Engine
+- [x] Default application settings
+- [x] Source Manager
+- [x] Per-source interval support
+- [x] Per-source TTL support
+- [x] Custom headers storage
+- [x] TLS verification setting
+- [x] last_seen TTL model
+- [x] Integration tests
+- [x] SQLite integrity check
 
-## Next stage
+## Database entities
 
-1. Database schema
-2. Migration engine
-3. Configuration engine
-4. Panel settings backend
-5. Source manager
-6. Scheduler / Fetcher
+- settings
+- sources
+- configs
+- config_sources
+- config_observations
+- fetch_cycles
+- fetch_results
+- cdn_rules
+- overrides
+- system_health
+- audit_events
+- migrations
+
+## Status
+
+CORE STAGE 1 COMPLETE
+
+## Next
+
+Panel v0.1
+
+The next stage will provide:
+
+- Login
+- Dashboard
+- Global settings
+- Add/Edit/Delete Sources
+- Enable/Disable Sources
+- Per-source TTL
+- Per-source fetch interval
+- Request timeout
+- TLS setting
+- Custom request headers

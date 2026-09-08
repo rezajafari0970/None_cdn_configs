@@ -1593,6 +1593,12 @@ echo "===== DEPLOYING SOURCE ====="
 
 rm -rf "$APP_DIR/src"
 rm -rf "$APP_DIR/migrations"
+rm -rf "$APP_DIR/scripts"
+rm -rf "$APP_DIR/tests"
+
+mkdir -p \
+    "$APP_DIR/scripts" \
+    "$APP_DIR/tests/integration"
 
 cp -a \
     "$PROJECT/src" \
@@ -1602,20 +1608,34 @@ cp -a \
     "$PROJECT/migrations" \
     "$APP_DIR/migrations"
 
+cp \
+    "$PROJECT/scripts/migrate.php" \
+    "$APP_DIR/scripts/migrate.php"
+
+cp \
+    "$PROJECT/tests/integration/test-stage1.php" \
+    "$APP_DIR/tests/integration/test-stage1.php"
+
 chown -R \
     root:root \
     "$APP_DIR/src" \
-    "$APP_DIR/migrations"
+    "$APP_DIR/migrations" \
+    "$APP_DIR/scripts" \
+    "$APP_DIR/tests"
 
 find \
     "$APP_DIR/src" \
     "$APP_DIR/migrations" \
+    "$APP_DIR/scripts" \
+    "$APP_DIR/tests" \
     -type d \
     -exec chmod 755 {} \;
 
 find \
     "$APP_DIR/src" \
     "$APP_DIR/migrations" \
+    "$APP_DIR/scripts" \
+    "$APP_DIR/tests" \
     -type f \
     -exec chmod 644 {} \;
 
@@ -1651,7 +1671,7 @@ echo "===== MIGRATION ====="
 runuser \
     -u nonecdn \
     -- php \
-    "$PROJECT/scripts/migrate.php"
+    "$APP_DIR/scripts/migrate.php"
 
 
 # ============================================================
@@ -1681,7 +1701,7 @@ echo "===== INTEGRATION TEST ====="
 runuser \
     -u nonecdn \
     -- php \
-    "$PROJECT/tests/integration/test-stage1.php"
+    "$APP_DIR/tests/integration/test-stage1.php"
 
 
 # ============================================================
